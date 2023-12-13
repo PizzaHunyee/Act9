@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>act9 Translator</title>
+</head>
+<body>
+
+    <h1>act9 Translator</h1>
+
+    <p>This page allows you to translate sentences to and from act9 encryption.</p>
+
+    <h2>Your Sentence to act9</h2>
+    <label for="inputSentence">Enter your sentence:</label>
+    <input type="text" id="inputSentence">
+    <button onclick="translateToAct9()">Translate to act9</button>
+    <p id="act9Output"></p>
+
+    <h2>Act9 to Your Sentence</h2>
+    <label for="inputAct9">Enter act9 code:</label>
+    <input type="text" id="inputAct9">
+    <button onclick="translateToSentence()">Translate to Sentence</button>
+    <p id="sentenceOutput"></p>
+
+    <script>
+        function translateToAct9() {
+            const sentence = document.getElementById('inputSentence').value.toUpperCase();
+            const act9 = sentence.split('').map(char => {
+                if (char === ' ') return ' ';
+                if (char >= 'A' && char <= 'Z') return getAct9Symbol(char);
+                return char;
+            }).join('');
+            document.getElementById('act9Output').innerText = `act9: ${act9}`;
+        }
+
+        function translateToSentence() {
+            const act9Code = document.getElementById('inputAct9').value;
+            const sentence = act9Code.split(' ').map(code => {
+                if (code === ' ') return ' ';
+                const char = getCharFromAct9Symbol(code);
+                return char ? char : code;
+            }).join('');
+            document.getElementById('sentenceOutput').innerText = `Sentence: ${sentence}`;
+        }
+
+        function getAct9Symbol(char) {
+            const symbolMap = {
+                'A': '+',
+                'B': '_',
+                'C': '()',
+                'D': '$',
+                ' ': ' '
+            };
+            return symbolMap[char] || char;
+        }
+
+        function getCharFromAct9Symbol(code) {
+            const reverseMap = {
+                '+': 'A',
+                '_': 'B',
+                '()': 'C',
+                '$': 'D',
+                ' ': ' '
+            };
+            return reverseMap[code] || code;
+        }
+    </script>
+
+</body>
+</html>
