@@ -1,71 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>act9 Translator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Continuous Wave Adaptive Intelligence Simulation</title>
+  <style>
+    :root {
+      --bg: #060913;
+      --panel: #0d1426;
+      --panel-2: #101a31;
+      --line: #273a64;
+      --text: #d9e8ff;
+      --muted: #91a5cf;
+      --accent: #52e3c2;
+      --warn: #ffcf5a;
+      --danger: #ff6b6b;
+      --glow: 0 0 30px rgba(82, 227, 194, 0.18);
+      color-scheme: dark;
+      font-family: Inter, Segoe UI, Roboto, system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #0d1930 0%, var(--bg) 45%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 320px 1fr;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(16, 26, 49, 0.92), rgba(12, 20, 38, 0.95));
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--glow);
+    }
+
+    .controls {
+      padding: 14px;
+      position: sticky;
+      top: 12px;
+      align-self: start;
+    }
+
+    h1,h2,h3 { margin: 0 0 8px 0; }
+    h1 { font-size: 1.2rem; letter-spacing: 0.02em; }
+    h2 { font-size: 1rem; color: var(--accent); margin-top: 14px; }
+    p, label, small { color: var(--muted); }
+
+    .grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr 90px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] { width: 100%; }
+    button {
+      border: 1px solid var(--line);
+      background: #1a2b4a;
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 4px;
+      margin-bottom: 6px;
+    }
+
+    .dashboard {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(300px, 1fr));
+    }
+
+    canvas {
+      width: 100%;
+      height: 270px;
+      display: block;
+      border-radius: 12px;
+      background: rgba(2, 6, 15, 0.9);
+    }
+
+    .tile { padding: 10px; }
+    .title { font-size: 0.92rem; color: var(--accent); margin-bottom: 8px; }
+    .metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+    .metric { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+    .metric strong { display: block; font-size: 1.1rem; color: #fff; }
+    .note { font-size: 0.85rem; line-height: 1.4; margin-top: 8px; }
+
+    @media (max-width: 1100px) {
+      .app { grid-template-columns: 1fr; }
+      .dashboard { grid-template-columns: 1fr; }
+      .controls { position: static; }
+    }
+  </style>
 </head>
 <body>
+  <div class="app">
+    <section class="panel controls">
+      <h1>Continuous Wave Adaptive Intelligence System</h1>
+      <p>Research-grade exploratory simulation of adaptive wave intelligence dynamics.</p>
 
-    <h1>act9 Translator</h1>
+      <h2>Core Parameters</h2>
+      <div class="grid"><label>Node count</label><span id="nodeCountV">24</span></div>
+      <input id="nodeCount" type="range" min="8" max="48" value="24" step="2" />
+      <div class="grid"><label>Coupling gain η</label><span id="couplingGainV">0.35</span></div>
+      <input id="couplingGain" type="range" min="0" max="1.2" value="0.35" step="0.01" />
+      <div class="grid"><label>Learning rate</label><span id="learnRateV">0.07</span></div>
+      <input id="learnRate" type="range" min="0" max="0.3" value="0.07" step="0.005" />
+      <div class="grid"><label>Decay λ</label><span id="decayV">0.03</span></div>
+      <input id="decay" type="range" min="0" max="0.15" value="0.03" step="0.002" />
+      <div class="grid"><label>Noise</label><span id="noiseV">0.01</span></div>
+      <input id="noise" type="range" min="0" max="0.08" value="0.01" step="0.002" />
+      <div class="grid"><label>Field feedback κ</label><span id="fieldFeedbackV">0.25</span></div>
+      <input id="fieldFeedback" type="range" min="0" max="1" value="0.25" step="0.01" />
 
-    <p>This page allows you to translate sentences to and from act9 encryption.</p>
+      <h2>Experiment Controls</h2>
+      <button id="restartBtn">Reinitialize</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="perturbBtn">Inject Perturbation</button>
 
-    <h2>Your Sentence to act9</h2>
-    <label for="inputSentence">Enter your sentence:</label>
-    <input type="text" id="inputSentence">
-    <button onclick="translateToAct9()">Translate to act9</button>
-    <p id="act9Output"></p>
+      <div class="metrics">
+        <div class="metric"><small>Mean Coherence</small><strong id="mCoherence">-</strong></div>
+        <div class="metric"><small>Attractor Stability</small><strong id="mAttractor">-</strong></div>
+        <div class="metric"><small>Cluster Count</small><strong id="mClusters">-</strong></div>
+        <div class="metric"><small>Edge of Chaos</small><strong id="mChaos">-</strong></div>
+      </div>
 
-    <h2>Act9 to Your Sentence</h2>
-    <label for="inputAct9">Enter act9 code:</label>
-    <input type="text" id="inputAct9">
-    <button onclick="translateToSentence()">Translate to Sentence</button>
-    <p id="sentenceOutput"></p>
+      <p class="note">
+        Mathematical model: <br>
+        N<sub>i</sub>(t)=A<sub>i</sub>(t)sin(ω<sub>i</sub>(t)t+φ<sub>i</sub>(t)),
+        I<sub>ij</sub>(t)=C<sub>ij</sub>(t)N<sub>i</sub>(t)N<sub>j</sub>(t-τ<sub>ij</sub>),
+        ΔC<sub>ij</sub>∝coherence<sub>ij</sub>-λC<sub>ij</sub>,
+        F(t)=ΣN<sub>i</sub>(t)+ηΣI<sub>ij</sub>(t).
+      </p>
+    </section>
 
-    <script>
-        function translateToAct9() {
-            const sentence = document.getElementById('inputSentence').value.toUpperCase();
-            const act9 = sentence.split('').map(char => {
-                if (char === ' ') return ' ';
-                if (char >= 'A' && char <= 'Z') return getAct9Symbol(char);
-                return char;
-            }).join('');
-            document.getElementById('act9Output').innerText = `act9: ${act9}`;
-        }
+    <section class="dashboard">
+      <article class="panel tile"><div class="title">Oscillating Node Field + Dynamic Coupling Topology</div><canvas id="fieldCanvas" width="780" height="270"></canvas></article>
+      <article class="panel tile"><div class="title">Global Resonant Field & Attractor Persistence</div><canvas id="globalCanvas" width="780" height="270"></canvas></article>
+      <article class="panel tile"><div class="title">Phase Synchronization Matrix / Resonance Heatmap</div><canvas id="phaseCanvas" width="780" height="270"></canvas></article>
+      <article class="panel tile"><div class="title">Frequency Spectrum + Coherence Energy Map</div><canvas id="spectrumCanvas" width="780" height="270"></canvas></article>
+    </section>
+  </div>
 
-        function translateToSentence() {
-            const act9Code = document.getElementById('inputAct9').value;
-            const sentence = act9Code.split(' ').map(code => {
-                if (code === ' ') return ' ';
-                const char = getCharFromAct9Symbol(code);
-                return char ? char : code;
-            }).join('');
-            document.getElementById('sentenceOutput').innerText = `Sentence: ${sentence}`;
-        }
+<script>
+class WaveIntelligenceSim {
+  constructor(config = {}) { this.configure(config); this.initialize(); }
+  configure(config) {
+    this.n = config.n ?? 24; this.eta = config.eta ?? 0.35; this.lr = config.lr ?? 0.07;
+    this.lambda = config.lambda ?? 0.03; this.noise = config.noise ?? 0.01; this.kappa = config.kappa ?? 0.25;
+    this.dt = 0.03; this.t = 0; this.delayMax = 14; this.historyLength = 600;
+  }
+  initialize() {
+    const n = this.n;
+    this.A = Float64Array.from({length:n}, () => 0.7 + Math.random() * 0.6);
+    this.w = Float64Array.from({length:n}, () => 0.7 + Math.random() * 2.2);
+    this.phi = Float64Array.from({length:n}, () => Math.random() * Math.PI * 2);
+    this.N = new Float64Array(n);
+    this.C = Array.from({length:n}, (_,i)=>Float64Array.from({length:n},(__,j)=>i===j?0:(Math.random()-0.5)*0.22));
+    this.delay = Array.from({length:n}, ()=>Uint8Array.from({length:n}, ()=>1 + Math.floor(Math.random()*this.delayMax)));
+    this.history = Array.from({length:n}, ()=>Array(this.historyLength).fill(0));
+    this.globalHistory = Array(this.historyLength).fill(0);
+    this.attractor = Array(100).fill(0);
+  }
+  delayed(j, d) { const h = this.history[j]; return h[(h.length - 1 - d + h.length) % h.length]; }
+  step() {
+    const n = this.n;
+    const sin = Math.sin, abs = Math.abs;
+    for (let i=0; i<n; i++) this.N[i] = this.A[i] * sin(this.w[i] * this.t + this.phi[i]);
 
-        function getAct9Symbol(char) {
-            const symbolMap = {
-                'A': '+',
-                'B': '_',
-                'C': '()',
-                'D': '$',
-                ' ': ' '
-            };
-            return symbolMap[char] || char;
-        }
+    let interactionSum = 0;
+    for (let i=0; i<n; i++) {
+      let couplingImpact = 0;
+      for (let j=0; j<n; j++) {
+        if (i===j) continue;
+        const NjD = this.delayed(j, this.delay[i][j]);
+        const interaction = this.C[i][j] * this.N[i] * NjD;
+        interactionSum += interaction;
+        couplingImpact += interaction;
 
-        function getCharFromAct9Symbol(code) {
-            const reverseMap = {
-                '+': 'A',
-                '_': 'B',
-                '()': 'C',
-                '$': 'D',
-                ' ': ' '
-            };
-            return reverseMap[code] || code;
-        }
-    </script>
+        const coh = Math.cos(this.phi[i] - this.phi[j]) * (1 - abs(this.w[i]-this.w[j]) / 4);
+        const dC = this.lr * (coh - this.lambda * this.C[i][j]);
+        this.C[i][j] += dC * this.dt;
+        this.C[i][j] = Math.max(-1, Math.min(1, this.C[i][j]));
+      }
+      const fieldSignal = this.kappa * couplingImpact;
+      this.w[i] += 0.08 * fieldSignal * this.dt + (Math.random()-0.5) * this.noise * 0.02;
+      this.A[i] += (0.4 * (1.2 - this.A[i]) + 0.15 * fieldSignal) * this.dt;
+      this.phi[i] += (this.w[i] + 0.05 * fieldSignal) * this.dt;
+      this.A[i] = Math.max(0.08, Math.min(2.5, this.A[i]));
+      this.w[i] = Math.max(0.2, Math.min(4.5, this.w[i]));
+      this.history[i].push(this.N[i]); if (this.history[i].length > this.historyLength) this.history[i].shift();
+    }
 
+    const F = this.N.reduce((a,b)=>a+b,0) + this.eta * interactionSum;
+    this.globalHistory.push(F); if (this.globalHistory.length > this.historyLength) this.globalHistory.shift();
+
+    const coherence = this.meanCoherence();
+    this.attractor.push(1/(1 + this.variance(this.globalHistory.slice(-80)))); if (this.attractor.length > 100) this.attractor.shift();
+
+    this.t += this.dt;
+    this.topologyPruneGrow(coherence);
+  }
+  topologyPruneGrow(coherence) {
+    for (let i=0; i<this.n; i++) for (let j=0; j<this.n; j++) if (i!==j) {
+      if (Math.abs(this.C[i][j]) < 0.02 && Math.random() < 0.0007) this.C[i][j] = (Math.random()-0.5)*0.15;
+      if (Math.abs(this.C[i][j]) > 0.7 && coherence > 0.75 && Math.random()<0.001) this.delay[i][j] = Math.max(1, this.delay[i][j]-1);
+    }
+  }
+  variance(arr){ const m = arr.reduce((a,b)=>a+b,0)/arr.length; return arr.reduce((s,v)=>s+(v-m)*(v-m),0)/arr.length; }
+  meanCoherence() { let c=0,k=0; for (let i=0;i<this.n;i++) for (let j=i+1;j<this.n;j++){ c+=Math.cos(this.phi[i]-this.phi[j]); k++; } return (c/k+1)/2; }
+  clusterCount(th=0.75){ const used = Array(this.n).fill(false); let count=0; for(let i=0;i<this.n;i++){ if(used[i]) continue; count++; const q=[i]; used[i]=true; while(q.length){ const a=q.pop(); for(let b=0;b<this.n;b++){ if(!used[b]&&a!==b&&Math.cos(this.phi[a]-this.phi[b])>th){ used[b]=true; q.push(b);} } } } return count; }
+  chaosIndex(){ const v = this.variance(this.globalHistory.slice(-120)); const coh = this.meanCoherence(); return Math.min(1, Math.max(0, (v*0.6 + (1-coh))*0.8)); }
+}
+
+const ids = ['nodeCount','couplingGain','learnRate','decay','noise','fieldFeedback'];
+const outputs = {nodeCount:'nodeCountV', couplingGain:'couplingGainV', learnRate:'learnRateV', decay:'decayV', noise:'noiseV', fieldFeedback:'fieldFeedbackV'};
+let sim = new WaveIntelligenceSim(); let paused = false;
+const ctx = Object.fromEntries(['field','global','phase','spectrum'].map(k=>[k,document.getElementById(k+'Canvas').getContext('2d')]));
+
+function bindControls(){
+  ids.forEach(id=>{ const el=document.getElementById(id); el.oninput=()=>{ document.getElementById(outputs[id]).textContent = el.value; }; });
+  document.getElementById('restartBtn').onclick=()=>{ sim = new WaveIntelligenceSim({
+    n:+nodeCount.value, eta:+couplingGain.value, lr:+learnRate.value, lambda:+decay.value, noise:+noise.value, kappa:+fieldFeedback.value
+  }); };
+  document.getElementById('pauseBtn').onclick=(e)=>{ paused=!paused; e.target.textContent = paused ? 'Resume' : 'Pause'; };
+  document.getElementById('perturbBtn').onclick=()=>{ for(let i=0;i<sim.n;i++){ sim.phi[i]+= (Math.random()-0.5)*1.2; sim.w[i]*= 0.92+Math.random()*0.16; } };
+}
+
+function drawField(){
+  const c=ctx.field, w=c.canvas.width, h=c.canvas.height; c.clearRect(0,0,w,h);
+  const cx=w/2, cy=h/2, r=Math.min(w,h)*0.34; const pos=[];
+  for(let i=0;i<sim.n;i++){ const a=i/sim.n*Math.PI*2; pos.push([cx+r*Math.cos(a), cy+r*Math.sin(a)]); }
+  for(let i=0;i<sim.n;i++) for(let j=i+1;j<sim.n;j++){
+    const kij = sim.C[i][j]; if(Math.abs(kij)<0.12) continue;
+    const alpha=Math.min(0.75,Math.abs(kij)); c.strokeStyle = kij>0?`rgba(82,227,194,${alpha})`:`rgba(255,107,107,${alpha})`;
+    c.beginPath(); c.moveTo(pos[i][0],pos[i][1]); c.lineTo(pos[j][0],pos[j][1]); c.stroke();
+  }
+  for(let i=0;i<sim.n;i++){
+    const [x,y]=pos[i]; const amp=sim.A[i], v=sim.N[i];
+    c.fillStyle=`hsl(${190+v*50},90%,${45+amp*12}%)`; c.beginPath(); c.arc(x,y,4+amp*3,0,Math.PI*2); c.fill();
+  }
+}
+function drawGlobal(){ const c=ctx.global,w=c.canvas.width,h=c.canvas.height; c.clearRect(0,0,w,h);
+  const data=sim.globalHistory; const max=Math.max(...data.map(Math.abs),1e-4); c.strokeStyle='#77b7ff'; c.beginPath();
+  data.forEach((v,i)=>{ const x=i/(data.length-1)*w, y=h*0.5 - (v/max)*h*0.38; i?c.lineTo(x,y):c.moveTo(x,y);}); c.stroke();
+  const attr=sim.attractor; c.strokeStyle='#52e3c2'; c.beginPath(); attr.forEach((v,i)=>{const x=i/(attr.length-1)*w,y=h - v*h*0.9; i?c.lineTo(x,y):c.moveTo(x,y);}); c.stroke(); }
+function drawPhase(){ const c=ctx.phase,w=c.canvas.width,h=c.canvas.height; c.clearRect(0,0,w,h); const n=sim.n, cell=Math.min(w,h)/n;
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++){ const coh=(Math.cos(sim.phi[i]-sim.phi[j])+1)/2; c.fillStyle=`hsl(${260-coh*240},90%,${25+coh*55}%)`; c.fillRect(i*cell,j*cell,cell,cell);} }
+function drawSpectrum(){ const c=ctx.spectrum,w=c.canvas.width,h=c.canvas.height; c.clearRect(0,0,w,h);
+  const bins=28, hist=Array(bins).fill(0); for(let i=0;i<sim.n;i++){ const b=Math.min(bins-1,Math.floor((sim.w[i]/4.5)*bins)); hist[b]+=sim.A[i]; }
+  const max=Math.max(...hist,1); hist.forEach((v,i)=>{ const bw=w/bins-4,bh=(v/max)*(h-20); c.fillStyle=`hsl(${200+i*4},95%,55%)`; c.fillRect(i*(w/bins)+2,h-bh,bw,bh); });
+  const coh=sim.meanCoherence(); c.fillStyle='#ffcf5a'; c.fillRect(0,0,w*coh,6);
+}
+function updateMetrics(){ mCoherence.textContent = sim.meanCoherence().toFixed(3); mAttractor.textContent=(sim.attractor.slice(-20).reduce((a,b)=>a+b,0)/20).toFixed(3); mClusters.textContent=sim.clusterCount(); mChaos.textContent=sim.chaosIndex().toFixed(3); }
+
+function loop(){ if(!paused) for(let i=0;i<3;i++) sim.step(); drawField(); drawGlobal(); drawPhase(); drawSpectrum(); updateMetrics(); requestAnimationFrame(loop); }
+bindControls(); loop();
+</script>
 </body>
 </html>
